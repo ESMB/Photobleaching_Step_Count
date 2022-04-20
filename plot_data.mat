@@ -1,0 +1,9 @@
+% This function extracts the x and y data from a specified trace along with the coordinate of the spot in the image
+
+function [xAxis, yAxis, xCoord, yCoord] = plot_data(CellArray, trace_number)
+    single_trace_file_data = CellArray{trace_number,1};
+    xAxis = single_trace_file_data(:,4);  % x data
+    yAxis = single_trace_file_data(:,1);  % y data
+    xCoord = single_trace_file_data(1,2);  % x coordinate
+    yCoord = single_trace_file_data(1,3);  % y coordinate
+end

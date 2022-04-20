@@ -1,0 +1,40 @@
+select_directory_488 = uigetdir('Z:\Katie Morris\DATA');
+directory_488 = dir([select_directory_488, '\*.csv']);
+numfiles_488 = length(directory_488);
+
+data = cell(numfiles_488,1);
+
+frames_per_trace = 500;
+sensitivity_r = 50;
+window_size = 20;
+
+peak_thresh_488 = 180;
+t_thresh = 0.05;
+
+number_steps_vector = [];
+
+for j = 1:numfiles_488
+    data{j,1} = readmatrix(fullfile(select_directory_488, directory_488(j).name));
+end
+
+for i = 1:numfiles_488
+    rawdata_488 = data{i,1};
+    rel_column_data_488 = rawdata_488(1:end, 2:end);
+    sorted_data_488 = sortrows(rel_column_data_488, [2 3]);
+    
+    rows_488 = size(sorted_data_488, 1);
+    NoCells_488 = rows_488 / frames_per_trace;
+    Hundred_vector_488 = frames_per_trace * (ones(NoCells_488, 1));
+    MyCellArray_488 = mat2cell(sorted_data_488, Hundred_vector_488, 4);
+    
+    for m = 1:NoCells_488
+        
+        [xAxis, yAxis, ~, ~] = plot_data(MyCellArray_488, m);
+        
+        [FiltData_488] = C_K_Filter(yAxis, frames_per_trace, window_size, sensitivity_r);
+        
+        [~,~, positive_steps_488,~,differential_y] = Step_Fitting(FiltData_488, xAxis, peak_thresh_488, t_thresh, sensitivity_r, window_size);
+        
+        number_steps_vector = [number_steps_vector; positive_steps_488];
+    end
+end
